@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Tom & Jerry 3D VR World</title>
+    <!-- A-Frame VR Framework -->
+    <script src="https://aframe.io/releases/1.5.0/aframe.min.js"></script>
+    <!-- Environment Component for a quick, nice cartoon-like background -->
+    <script
+        src="https://unpkg.com/aframe-environment-component@1.3.3/dist/aframe-environment-component.min.js"></script>
+    <script>
+        // Custom component to handle click event on Jerry
+        AFRAME.registerComponent('chase-trigger', {
+            init: function () {
+                var el = this.el;
+                el.addEventListener('click', function () {
+                    // Make Jerry run
+                    el.setAttribute('animation__run', {
+                        property: 'position',
+                        to: '-15 0.3 -4.5',
+                        dur: 2500,
+                        easing: 'linear'
+                    });
+                    // Make Jerry face the direction he runs
+                    el.setAttribute('animation__turn', {
+                        property: 'rotation',
+                        to: '0 -90 0',
+                        dur: 200
+                    });
+
+                    // Make Tom chase after a short delay
+                    setTimeout(() => {
+                        var tom = document.querySelector('#tom');
+                        tom.setAttribute('animation__run', {
+                            property: 'position',
+                            to: '-13 0.8 -4.5',
+                            dur: 2000,
+                            easing: 'linear'
+                        });
+                        tom.setAttribute('animation__turn', {
+                            property: 'rotation',
+                            to: '0 -90 0',
+                            dur: 200
+                        });
+                    }, 400); // Tom's reaction time
+                });
+            }
+        });
+    </script>
+    <style>
+        body {
+            margin: 0;
+            overflow: hidden;
+            font-family: 'Comic Sans MS', 'Chalkboard SE', 'Comic Neue', sans-serif;
+            background-color: #87ceeb;
+        }
+
+        #ui-container {
+            position: absolute;
+            top: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            z-index: 9999;
+            text-align: center;
+            background: rgba(255, 255, 255, 0.85);
+            padding: 15px 35px;
+            border-radius: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            backdrop-filter: blur(10px);
+            border: 3px solid #FFD700;
+            pointer-events: none;
+            /* Let clicks pass to the VR canvas */
+        }
+
+        h1 {
+            margin: 0;
+            color: #FF4500;
+            font-size: 2.2rem;
+            text-shadow: 2px 2px 0px #fff, -2px -2px 0px #fff, 2px -2px 0px #fff, -2px 2px 0px #fff;
+            letter-spacing: 1px;
+        }
+
+        p {
+            margin: 8px 0 0 0;
+            color: #333;
+            font-size: 1.1rem;
+            font-weight: bold;
+        }
+
+        .instructions {
+            font-size: 0.9rem;
+            color: #555;
+            margin-top: 5px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- Floating UI Overlay -->
+    <div id="ui-container">
+        <h1>Tom & Jerry VR</h1>
+        <p>Explore the Cartoon World!</p>
+        <div class="instructions">Click and drag to look around. Use WASD to move. Hover and click Jerry to start a
+            chase!</div>
+    </div>
+
+    <!-- A-Frame VR Scene -->
+    <!-- We use the dream preset from the environment component for a vibrant, cartoonish outdoor vibe -->
+    <a-scene
+        environment="preset: dream; skyType: atmosphere; lighting: none; groundColor: #7CFC00; groundColor2: #32CD32; grid: none">
+
+        <!-- Assets Manager -->
+        <a-assets>
+            <img id="wood" src="https://img.freepik.com/free-photo/wood-texture-background_1373-162.jpg"
+                crossorigin="anonymous">
+        </a-assets>
+
+        <!-- Lighting -->
+        <a-light type="ambient" color="#ffffff" intensity="0.8"></a-light>
+        <a-light type="directional" position="-1 2 1" color="#fff" intensity="0.5" castShadow="true"></a-light>
+
+        <!-- ======================= -->
+        <!-- THE SCENE (LIVING ROOM) -->
+        <!-- ======================= -->
+
+        <!-- Flooring (Wooden floor inside the house area) -->
+        <a-plane position="0 0.02 0" rotation="-90 0 0" width="16" height="12" color="#D2B48C"
+            shadow="receive: true"></a-plane>
+
+        <!-- Walls (Light blue cartoon walls) -->
+        <a-box position="0 2.5 -6" width="16" height="5" depth="0.2" color="#ADD8E6" shadow="receive: true"></a-box>
+        <a-box position="-8 2.5 0" width="0.2" height="5" depth="12" color="#ADD8E6" shadow="receive: true"></a-box>
+        <a-box position="8 2.5 0" width="0.2" height="5" depth="12" color="#ADD8E6" shadow="receive: true"></a-box>
+
+        <!-- Skirting Boards (Brown trimming at the bottom of walls) -->
+        <a-box position="0 0.4 -5.9" width="16" height="0.8" depth="0.1" color="#8B4513"></a-box>
+
+        <!-- Jerry's Famous Mouse Hole Base Shape -->
+        <!-- Black semi-circle cutout on the skirting board -->
+        <a-cylinder position="0 0.4 -5.85" rotation="90 0 0" radius="0.8" height="0.3" color="#111"
+            theta-length="180"></a-cylinder>
+
+        <!-- Giant Cheese Slice for Jerry -->
+        <a-entity position="-1 0.7 -4" rotation="0 30 0" shadow="cast: true; receive: true">
+            <!-- Main body of cheese (yellow cylinder slice) -->
+            <a-cylinder radius="1" height="0.5" theta-length="60" color="#FFD700"></a-cylinder>
+            <!-- Cheese block details (holes) -->
+            <a-sphere position="0.4 0.25 0.3" radius="0.2" color="#DAA520"></a-sphere>
+            <a-sphere position="-0.2 0.25 0.5" radius="0.15" color="#DAA520"></a-sphere>
+            <a-sphere position="0 0.25 -0.2" radius="0.18" color="#DAA520"></a-sphere>
+            <a-sphere position="0.5 0 -0.1" radius="0.15" color="#DAA520"></a-sphere>
+        </a-entity>
+
+        <!-- ======================= -->
+        <!-- CHARACTERS              -->
+        <!-- ======================= -->
+
+        <!-- JERRY (Detailed small brown mouse representation) -->
+        <a-entity id="jerry" position="0.5 0.3 -4.5" rotation="0 -45 0" class="clickable" chase-trigger>
+            <!-- Body -->
+            <a-sphere position="0 0 0" radius="0.25" color="#8B4513" shadow="cast: true" scale="1 0.8 1.2"></a-sphere>
+            <!-- Belly -->
+            <a-sphere position="0 -0.05 0.05" radius="0.22" color="#D2B48C" scale="0.9 0.7 1.1"></a-sphere>
+            <!-- Head -->
+            <a-sphere position="0 0.15 0.25" radius="0.18" color="#8B4513" scale="1 0.9 1"></a-sphere>
+            <!-- Snout -->
+            <a-cone position="0 0.1 0.4" radius-bottom="0.12" radius-top="0.02" height="0.15" color="#D2B48C"
+                rotation="-90 0 0"></a-cone>
+            <!-- Ears -->
+            <a-cylinder position="0.15 0.3 0.2" radius="0.12" height="0.02" color="#8B4513"
+                rotation="0 0 45"></a-cylinder>
+            <a-cylinder position="0.15 0.3 0.2" radius="0.10" height="0.025" color="#FFC0CB"
+                rotation="0 0 45"></a-cylinder>
+            <a-cylinder position="-0.15 0.3 0.2" radius="0.12" height="0.02" color="#8B4513"
+                rotation="0 0 -45"></a-cylinder>
+            <a-cylinder position="-0.15 0.3 0.2" radius="0.10" height="0.025" color="#FFC0CB"
+                rotation="0 0 -45"></a-cylinder>
+            <!-- Eyes -->
+            <a-sphere position="0.07 0.2 0.35" radius="0.05" color="#FFF"></a-sphere>
+            <a-sphere position="-0.07 0.2 0.35" radius="0.05" color="#FFF"></a-sphere>
+            <!-- Pupils -->
+            <a-sphere position="0.07 0.2 0.39" radius="0.025" color="#000"></a-sphere>
+            <a-sphere position="-0.07 0.2 0.39" radius="0.025" color="#000"></a-sphere>
+            <!-- Nose -->
+            <a-sphere position="0 0.1 0.48" radius="0.03" color="#000"></a-sphere>
+            <!-- Whiskers -->
+            <a-cylinder position="0.15 0.1 0.4" radius="0.002" height="0.2" color="#000" rotation="0 0 70"></a-cylinder>
+            <a-cylinder position="0.15 0.08 0.4" radius="0.002" height="0.2" color="#000"
+                rotation="0 0 85"></a-cylinder>
+            <a-cylinder position="-0.15 0.1 0.4" radius="0.002" height="0.2" color="#000"
+                rotation="0 0 -70"></a-cylinder>
+            <a-cylinder position="-0.15 0.08 0.4" radius="0.002" height="0.2" color="#000"
+                rotation="0 0 -85"></a-cylinder>
+            <!-- Tail -->
+            <a-cylinder position="0 -0.15 -0.3" radius="0.015" height="0.5" color="#8B4513"
+                rotation="70 0 0"></a-cylinder>
+            <!-- Arms -->
+            <a-cylinder position="0.25 0 0.1" radius="0.03" height="0.2" color="#8B4513"
+                rotation="0 0 -45"></a-cylinder>
+            <a-cylinder position="-0.25 0 0.1" radius="0.03" height="0.2" color="#8B4513"
+                rotation="0 0 45"></a-cylinder>
+            <!-- Hands -->
+            <a-sphere position="0.32 -0.07 0.1" radius="0.04" color="#D2B48C"></a-sphere>
+            <a-sphere position="-0.32 -0.07 0.1" radius="0.04" color="#D2B48C"></a-sphere>
+            <!-- Legs -->
+            <a-cylinder position="0.1 -0.25 0" radius="0.04" height="0.15" color="#8B4513"></a-cylinder>
+            <a-cylinder position="-0.1 -0.25 0" radius="0.04" height="0.15" color="#8B4513"></a-cylinder>
+            <!-- Feet -->
+            <a-sphere position="0.1 -0.33 0.05" radius="0.06" color="#D2B48C" scale="1 0.5 1.5"></a-sphere>
+            <a-sphere position="-0.1 -0.33 0.05" radius="0.06" color="#D2B48C" scale="1 0.5 1.5"></a-sphere>
+        </a-entity>
+
+        <!-- TOM (Detailed grey cat representation) -->
+        <a-entity id="tom" position="3 0.8 -2.5" rotation="0 -60 0" shadow="cast: true">
+            <!-- Torso -->
+            <a-sphere position="0 0.2 0" radius="0.4" color="#778899" scale="1 1.5 0.8"></a-sphere>
+            <!-- Belly (lighter grey/white) -->
+            <a-sphere position="0 0.15 0.2" radius="0.35" color="#E6E6FA" scale="0.9 1.4 0.6"></a-sphere>
+
+            <!-- Head -->
+            <a-sphere position="0 1.0 0.1" radius="0.35" color="#778899" scale="1.1 0.9 1"></a-sphere>
+            <!-- Snout / Cheeks -->
+            <a-sphere position="0.15 0.9 0.4" radius="0.15" color="#E6E6FA"></a-sphere>
+            <a-sphere position="-0.15 0.9 0.4" radius="0.15" color="#E6E6FA"></a-sphere>
+            <a-sphere position="0 0.8 0.45" radius="0.1" color="#E6E6FA"></a-sphere> <!-- Lower jaw -->
+
+            <!-- Ears -->
+            <a-cone position="0.25 1.3 0.1" radius-bottom="0.15" height="0.3" color="#778899"
+                rotation="0 0 -15"></a-cone>
+            <a-cone position="0.25 1.3 0.12" radius-bottom="0.1" height="0.28" color="#FFB6C1"
+                rotation="0 0 -15"></a-cone>
+            <a-cone position="-0.25 1.3 0.1" radius-bottom="0.15" height="0.3" color="#778899"
+                rotation="0 0 15"></a-cone>
+            <a-cone position="-0.25 1.3 0.12" radius-bottom="0.1" height="0.28" color="#FFB6C1"
+                rotation="0 0 15"></a-cone>
+
+            <!-- Eyes -->
+            <a-sphere position="0.12 1.05 0.42" radius="0.08" color="#FFFFE0" scale="1 1.2 1"></a-sphere>
+            <a-sphere position="-0.12 1.05 0.42" radius="0.08" color="#FFFFE0" scale="1 1.2 1"></a-sphere>
+            <!-- Pupils -->
+            <a-sphere position="0.12 1.05 0.49" radius="0.02" color="#006400" scale="1 1.5 1"></a-sphere>
+            <a-sphere position="-0.12 1.05 0.49" radius="0.02" color="#006400" scale="1 1.5 1"></a-sphere>
+
+            <!-- Nose -->
+            <a-sphere position="0 0.95 0.52" radius="0.04" color="#000" scale="1.2 0.8 1"></a-sphere>
+            <!-- Whiskers -->
+            <a-cylinder position="0.35 0.9 0.4" radius="0.003" height="0.4" color="#000" rotation="0 0 75"></a-cylinder>
+            <a-cylinder position="0.35 0.85 0.4" radius="0.003" height="0.4" color="#000"
+                rotation="0 0 85"></a-cylinder>
+            <a-cylinder position="-0.35 0.9 0.4" radius="0.003" height="0.4" color="#000"
+                rotation="0 0 -75"></a-cylinder>
+            <a-cylinder position="-0.35 0.85 0.4" radius="0.003" height="0.4" color="#000"
+                rotation="0 0 -85"></a-cylinder>
+
+            <!-- Arms -->
+            <a-cylinder position="0.4 0.5 0" radius="0.08" height="0.6" color="#778899" rotation="0 0 -30"></a-cylinder>
+            <a-cylinder position="-0.4 0.5 0" radius="0.08" height="0.6" color="#778899" rotation="0 0 30"></a-cylinder>
+            <!-- Hands (White Paws) -->
+            <a-sphere position="0.6 0.25 0" radius="0.1" color="#FFF"></a-sphere>
+            <a-sphere position="-0.6 0.25 0" radius="0.1" color="#FFF"></a-sphere>
+
+            <!-- Legs -->
+            <a-cylinder position="0.2 -0.3 0" radius="0.1" height="0.5" color="#778899"></a-cylinder>
+            <a-cylinder position="-0.2 -0.3 0" radius="0.1" height="0.5" color="#778899"></a-cylinder>
+            <!-- Feet (White Paws) -->
+            <a-sphere position="0.2 -0.6 0.1" radius="0.12" color="#FFF" scale="1 0.6 1.5"></a-sphere>
+            <a-sphere position="-0.2 -0.6 0.1" radius="0.12" color="#FFF" scale="1 0.6 1.5"></a-sphere>
+
+            <!-- Tail -->
+            <a-entity position="0 -0.2 -0.3" rotation="30 0 0"
+                animation="property: rotation; to: -10 20 0; dir: alternate; loop: true; dur: 1500; easing: easeInOutSine">
+                <a-cylinder position="0 0.3 -0.3" radius="0.05" height="0.8" color="#778899"
+                    rotation="-45 0 0"></a-cylinder>
+                <a-sphere position="0 0.6 -0.6" radius="0.06" color="#FFF"></a-sphere>
+            </a-entity>
+        </a-entity>
+
+        <!-- ======================= -->
+        <!-- PROPS & TRAPS           -->
+        <!-- ======================= -->
+
+        <!-- Classic Cartoon Anvil suspended in the air -->
+        <a-entity position="3 5 -2.5"
+            animation="property: position; to: 3 4.8 -2.5; dir: alternate; loop: true; dur: 800; easing: easeInOutSine">
+            <a-box position="0 0 0" width="1" height="0.4" depth="0.5" color="#333" shadow="cast: true"></a-box>
+            <a-cone position="0.7 0 0" rotation="0 0 -90" radius-bottom="0.25" height="0.5" color="#333"
+                shadow="cast: true"></a-cone>
+            <a-box position="0 0.3 0" width="0.4" height="0.2" depth="0.3" color="#333" shadow="cast: true"></a-box>
+        </a-entity>
+        <!-- Rope holding the anvil -->
+        <a-cylinder position="3 6.5 -2.5" radius="0.02" height="3" color="#D2B48C"></a-cylinder>
+
+        <!-- Red Mallet -->
+        <a-entity position="-3 1 -3" rotation="0 45 -20" shadow="cast: true">
+            <!-- Handle -->
+            <a-cylinder position="0 0 0" radius="0.05" height="1.5" color="#F4A460"></a-cylinder>
+            <!-- Mallet Head -->
+            <a-cylinder position="0 0.7 0" rotation="0 0 90" radius="0.25" height="0.8" color="#B22222"></a-cylinder>
+            <!-- Mallet Side Details -->
+            <a-cylinder position="0.4 0.7 0" rotation="0 0 90" radius="0.26" height="0.1" color="#FFF"></a-cylinder>
+            <a-cylinder position="-0.4 0.7 0" rotation="0 0 90" radius="0.26" height="0.1" color="#FFF"></a-cylinder>
+        </a-entity>
+
+        <!-- Cartoon Bowling Ball -->
+        <a-entity position="-1 0.3 -2" shadow="cast: true">
+            <a-sphere radius="0.3" color="#111"></a-sphere>
+            <!-- Finger holes -->
+            <a-sphere position="0.1 0.2 0.2" radius="0.04" color="#000"></a-sphere>
+            <a-sphere position="-0.1 0.2 0.2" radius="0.04" color="#000"></a-sphere>
+            <a-sphere position="0 0.1 0.28" radius="0.04" color="#000"></a-sphere>
+        </a-entity>
+
+
+        <!-- ======================= -->
+        <!-- USER CAMERA RIG         -->
+        <!-- ======================= -->
+        <a-entity position="0 1.6 3">
+            <!-- Camera for WebVR with Look Controls and WASD movement -->
+            <a-camera id="camera" look-controls wasd-controls="acceleration: 20">
+                <!-- Reticle cursor to interact with VR elements if needed -->
+                <a-cursor color="#FF4500" raycaster="objects: .clickable"
+                    animation__click="property: scale; startEvents: click; from: 0.1 0.1 0.1; to: 1 1 1; dur: 150"></a-cursor>
+            </a-camera>
+
+            <!-- VR Controller support -->
+            <a-entity laser-controls="hand: right" raycaster="objects: .clickable"></a-entity>
+            <a-entity laser-controls="hand: left" raycaster="objects: .clickable"></a-entity>
+        </a-entity>
+
+    </a-scene>
+</body>
+
+</html>
